@@ -15,7 +15,7 @@
 # debug
 .pnpm-debug.log*
 
-
+.env
 
 # vercel
 .vercel
