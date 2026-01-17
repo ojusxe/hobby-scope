@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useHobbyPlan } from "@/hooks";
 import {
-  Sparkles,
   Target,
   ChevronRight,
   Zap,
@@ -49,36 +48,26 @@ export default function LandingPage() {
           animate={{ y: 0, opacity: 1 }}
           className="mb-8"
         >
-             <h2 className="text-2xl md:text-3xl font-bold tracking-widest text-primary/80 uppercase font-display">
-            Hobby Scope
+             <h2 className="text-2xl md:text-3xl font-bold tracking-widest text-white uppercase font-display">
+            --Hobby Scope--
           </h2>
-        </motion.div>
-
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cr-green/10 text-cr-green mb-6"
-        >
-          <Sparkles className="w-4 h-4" />
-          <span className="text-sm font-medium">AI-Powered Learning</span>
         </motion.div>
 
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-4xl md:text-6xl font-bold mb-4 tracking-tight"
+          className="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-cr-green"
         >
-          Learn Any Hobby
-          <span className="block text-cr-green">Without Overwhelm</span>
+          Get better at your hobby{" "}
+          <span className="block text-white">Without Overwhelm</span>
         </motion.h1>
 
         <motion.p
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-lg text-muted-foreground mb-8 max-w-md mx-auto"
+          className="text-lg text-white/70 mb-8 max-w-md mx-auto"
         >
           Get a focused 5-8 technique plan tailored to your level. No more
           endless YouTube rabbit holes.
@@ -103,7 +92,7 @@ export default function LandingPage() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.7 }}
-          className="mt-12 flex items-center justify-center gap-8 text-muted-foreground text-sm"
+          className="mt-12 flex items-center justify-center gap-8 text-white/60 text-sm"
         >
           <div className="flex items-center gap-2">
             <Target className="w-4 h-4 text-cr-green" />
