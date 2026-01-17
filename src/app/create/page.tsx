@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingPlan } from "@/components/loading-plan";
-import { learningPlanSchema, type Resource } from "@/lib/schemas";
+import { type Resource } from "@/lib/schemas";
 import { LEVELS, HOBBY_SUGGESTIONS } from "@/lib/constants";
 import { useHobbyPlan } from "@/hooks";
 import { Sparkles } from "lucide-react";
@@ -22,29 +21,7 @@ export default function CreatePage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { object, submit } = useObject({
-    api: "/api/generate-plan",
-    schema: learningPlanSchema,
-    onFinish: ({ object }) => {
-      if (object) {
-        const planWithState = {
-          techniques: object.techniques.map((t: { title: string; description: string; resources: Resource[] }) => ({
-            ...t,
-            completed: false,
-            removed: false,
-          })),
-        };
-        savePlan(planWithState, hobby, level);
-        router.push("/plan");
-      }
-    },
-    onError: () => {
-      setError("[@createPage] Failed to generate plan. Please try again.");
-      setIsLoading(false);
-    },
-  });
-
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!hobby.trim()) {
       setError("Please enter a hobby");
       return;
@@ -55,11 +32,43 @@ export default function CreatePage() {
     }
     setError(null);
     setIsLoading(true);
-    submit({ hobby, level });
+
+    try {
+      const response = await fetch("/api/generate-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hobby, level }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate plan");
+      }
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      const planWithState = {
+        techniques: data.techniques.map((t: { title: string; description: string; resources: Resource[] }) => ({
+          ...t,
+          completed: false,
+          removed: false,
+        })),
+      };
+      
+      savePlan(planWithState, hobby, level);
+      router.push("/plan");
+    } catch (err) {
+      console.error("[@createPage] Error:", err);
+      setError("Failed to generate plan. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {
-    return <LoadingPlan hobby={hobby} level={level} partialData={object as any} />;
+    return <LoadingPlan hobby={hobby} level={level} />;
   }
 
   return (

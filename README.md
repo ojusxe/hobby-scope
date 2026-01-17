@@ -15,7 +15,16 @@ a passion project where you can get better at your hobbies without overwhelm, co
 
 ### technicalities 
 - using pplx api as primary and openrouter as fallback for the ai response
+- using youtube data api v3 for youtube links and serper.dev for google search links
+- backend working
 
+LLM	              Technique + refined search intent
+
+YouTube           API	Resolve → real video ID
+
+Article           search API	Resolve → real article URL
+
+App             	Validate + render
 
 ### credits
 - https://uiverse.io/jaykdoe/tasty-dragon-12

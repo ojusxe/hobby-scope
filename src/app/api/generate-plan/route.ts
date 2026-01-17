@@ -1,7 +1,9 @@
 import { perplexity } from "@ai-sdk/perplexity";
 import { createOpenAI } from "@ai-sdk/openai";
-import { streamObject } from "ai";
-import { learningPlanSchema } from "@/lib/schemas";
+import { generateObject } from "ai";
+import { learningPlanSearchMetaSchema } from "@/lib/search-schemas";
+import { resolveLearningPlan } from "@/lib/resource-resolver";
+import { NextResponse } from "next/server";
 
 export const maxDuration = 60;
 
@@ -28,20 +30,22 @@ Your task:
 - Avoid unnecessary theory or advanced concepts.
 - Prefer techniques that give maximum improvement with minimal effort.
 
-For each technique, include:
-- title (short)
-- description (1–2 sentences)
-- resources (2–3 items only)
-  - resource type: video, article, or audio
-  - resource title (a realistic, descriptive title for the resource)
-  - resource url (a real, working URL to the actual resource)
+For each technique, provide search metadata for 2-3 learning resources.
+DO NOT provide direct URLs - only provide search queries and intent.
 
-IMPORTANT - URL Requirements:
-- For videos: MUST be a valid YouTube URL (format: https://www.youtube.com/watch?v=... or https://youtu.be/...)
-- For articles: MUST be a valid URL to a real article on the internet (from reputable sources)
-- For audio: MUST be a valid URL to audio content (podcasts, audio lessons, etc.)
-- All URLs must be real, accessible links that exist on the internet
-- Use your web search capabilities to find actual, relevant resources
+For video resources:
+- type: "video"
+- title: A descriptive title for what the video should cover
+- searchQuery: An optimized YouTube search query to find this type of tutorial
+- intent: What the learner should gain from watching
+- maxDurationMinutes: (optional) Preferred max video length (5-15 mins ideal for tutorials)
+
+For article resources:
+- type: "article"  
+- title: A descriptive title for what the article should cover
+- searchQuery: An optimized web search query to find this guide/article
+- intent: What the learner should gain from reading
+- preferredSources: (optional) Array of preferred domains like "wikihow.com", "medium.com"
 
 User input:
 Hobby: ${hobby}
@@ -51,45 +55,71 @@ Output rules:
 - Return ONLY valid JSON
 - Do NOT include markdown
 - Do NOT include explanations outside JSON
+- Do NOT include URLs - only search queries
 - Follow this exact structure:
 
 {
   "techniques": [
     {
-      "title": "",
-      "description": "",
-      "resources": [
-        { "type": "video", "title": "", "url": "https://www.youtube.com/watch?v=..." },
-        { "type": "article", "title": "", "url": "https://example.com/article" },
-        { "type": "audio", "title": "", "url": "https://example.com/audio" }
+      "title": "Technique Name",
+      "description": "1-2 sentence description",
+      "resourceSearchMeta": [
+        { 
+          "type": "video", 
+          "title": "How to do X - Beginner Tutorial",
+          "searchQuery": "how to X for beginners tutorial",
+          "intent": "Learn the basic motion and form",
+          "maxDurationMinutes": 10
+        },
+        { 
+          "type": "article", 
+          "title": "Complete Guide to X",
+          "searchQuery": "complete beginner guide to X step by step",
+          "intent": "Understand the theory and common mistakes",
+          "preferredSources": ["wikihow.com", "medium.com"]
+        }
       ]
     }
   ]
 }
 
-Generate a focused, practical learning plan with REAL, WORKING URLs.`;
+Generate a focused, practical learning plan with detailed search metadata.`;
 
   try {
-    // pplx first (https://ai-sdk.dev/providers/ai-sdk-providers/perplexity)
-    const result = streamObject({
-      model: perplexity("sonar"),
-      schema: learningPlanSchema,
-      prompt,
-    });
-    return result.toTextStreamResponse();
-  } catch (error) {
-    console.error("[@generatePlan] pplx API error:", error);
-    // fallback
+    // Generate the plan with search metadata (no URLs)
+    let planWithMeta;
+    
     try {
-      const result = streamObject({
-        model: openrouter("xiaomi/mimo-v2-flash:free"),
-        schema: learningPlanSchema,
+      // Try Perplexity first
+      const result = await generateObject({
+        model: perplexity("sonar"),
+        schema: learningPlanSearchMetaSchema,
         prompt,
       });
-      return result.toTextStreamResponse();
-    } catch (fallbackError) {
-      console.error("OpenRouter fallback error:", fallbackError);
-      throw fallbackError;
+      planWithMeta = result.object;
+    } catch (error) {
+      console.error("[@generatePlan] pplx API error:", error);
+      // Fallback to OpenRouter
+      const result = await generateObject({
+        model: openrouter("google/gemini-2.0-flash-001"),
+        schema: learningPlanSearchMetaSchema,
+        prompt,
+      });
+      planWithMeta = result.object;
     }
+
+    // Resolve search metadata to actual URLs using external APIs
+    console.log("[@generatePlan] Resolving resources for plan...");
+    const resolvedPlan = await resolveLearningPlan(planWithMeta);
+    
+    console.log(`[@generatePlan] Resolved ${resolvedPlan.techniques.length} techniques`);
+    
+    return NextResponse.json(resolvedPlan);
+  } catch (error) {
+    console.error("[@generatePlan] Error:", error);
+    return NextResponse.json(
+      { error: "Failed to generate plan" },
+      { status: 500 }
+    );
   }
 }
