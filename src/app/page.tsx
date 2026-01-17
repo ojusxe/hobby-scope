@@ -13,6 +13,8 @@ import {
   Trophy,
 } from "lucide-react";
 
+import Stars from "@/components/patterns/stars";
+
 export default function LandingPage() {
   const router = useRouter();
   const { hasPlan, isLoaded } = useHobbyPlan();
@@ -29,9 +31,11 @@ export default function LandingPage() {
       animate={{ opacity: 1 }}
       className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary/30 to-background" />
-      <div className="absolute top-20 left-10 w-72 h-72 bg-cr-green/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-cr-green/5 rounded-full blur-3xl" />
+      <div className="absolute inset-0 z-0">
+        <Stars />
+      </div>
+
+
 
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}

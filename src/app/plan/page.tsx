@@ -25,6 +25,8 @@ import { TechniqueCard } from "@/components/technique-card";
 import { useMediaQuery, useHobbyPlan } from "@/hooks";
 import type { Technique } from "@/lib/schemas";
 
+import FourDots from "@/components/patterns/four-dots";
+
 export default function PlanPage() {
   const router = useRouter();
   const { 
@@ -88,8 +90,11 @@ export default function PlanPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen px-4 py-8 md:py-12"
+      className="min-h-screen px-4 py-8 md:py-12 relative"
     >
+      <div className="fixed inset-0 z-[-1] opacity-50">
+        <FourDots />
+      </div>
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="flex items-start justify-between">
           <div>

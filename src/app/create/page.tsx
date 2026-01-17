@@ -12,6 +12,8 @@ import { LEVELS, HOBBY_SUGGESTIONS } from "@/lib/constants";
 import { useHobbyPlan } from "@/hooks";
 import { Sparkles } from "lucide-react";
 
+import Paper from "@/components/patterns/paper";
+
 export default function CreatePage() {
   const router = useRouter();
   const { savePlan } = useHobbyPlan();
@@ -64,8 +66,11 @@ export default function CreatePage() {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative"
     >
+      <div className="absolute inset-0 z-[-1] opacity-60">
+        <Paper />
+      </div>
       <div className="w-full max-w-lg space-y-8">
         <div className="text-center">
           <motion.h2

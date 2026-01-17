@@ -1,6 +1,5 @@
 ## HOBBY-SCOPE
-a passion project where you can get better at your hobbies without overwhelm
-generates a tailored roadmap according to your level
+a passion project where you can get better at your hobbies without overwhelm, core feature is it generates a tailored roadmap according to your level
 
 ### todos
 - [ ] add background patterns for 3 pages @/components/pattern

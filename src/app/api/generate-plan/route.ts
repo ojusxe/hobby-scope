@@ -1,14 +1,9 @@
+import { perplexity } from "@ai-sdk/perplexity";
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamObject } from "ai";
 import { z } from "zod";
 
 export const maxDuration = 60;
-
-// Perplexity (primary)
-const perplexity = createOpenAI({
-  apiKey: process.env.PERPLEXITY_API_KEY,
-  baseURL: "https://api.perplexity.ai",
-});
 
 // OpenRouter (fallback)
 const openrouter = createOpenAI({
@@ -16,20 +11,7 @@ const openrouter = createOpenAI({
   baseURL: "https://openrouter.ai/api/v1",
 });
 
-const resourceSchema = z.object({
-  type: z.enum(["video", "article", "audio"]),
-  title: z.string(),
-});
-
-const techniqueSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  resources: z.array(resourceSchema).min(2).max(3),
-});
-
-const learningPlanSchema = z.object({
-  techniques: z.array(techniqueSchema).min(5).max(8),
-});
+import { learningPlanSchema } from "@/lib/schemas";
 
 export async function POST(req: Request) {
   const { hobby, level } = await req.json();
@@ -59,10 +41,28 @@ User input:
 Hobby: ${hobby}
 Level: ${level}
 
+Output rules:
+- Return ONLY valid JSON
+- Do NOT include markdown
+- Do NOT include explanations outside JSON
+- Follow this exact structure:
+
+{
+  "techniques": [
+    {
+      "title": "",
+      "description": "",
+      "resources": [
+        { "type": "video", "title": "" }
+      ]
+    }
+  ]
+}
+
 Generate a focused, practical learning plan.`;
 
   try {
-    // Try Perplexity first (paid)
+    // Try Perplexity first (using official @ai-sdk/perplexity provider)
     const result = streamObject({
       model: perplexity("sonar"),
       schema: learningPlanSchema,

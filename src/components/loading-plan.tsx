@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import PacmanLoader from "@/components/pacman-loader";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { LearningPlan } from "@/lib/schemas";
@@ -21,13 +21,9 @@ export function LoadingPlan({ hobby, level, partialData }: LoadingPlanProps) {
     >
       <div className="w-full max-w-lg space-y-8">
         <div className="text-center">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="inline-block mb-4"
-          >
-            <Sparkles className="w-12 h-12 text-cr-green" />
-          </motion.div>
+          <div className="flex justify-center mb-8">
+            <PacmanLoader />
+          </div>
           <h2 className="text-2xl font-bold mb-2">Creating Your Plan...</h2>
           <p className="text-muted-foreground">
             Crafting {hobby} techniques for {level} level
@@ -35,24 +31,55 @@ export function LoadingPlan({ hobby, level, partialData }: LoadingPlanProps) {
         </div>
 
         <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
+          {/* Show real partial techniques as they arrive */}
+          {partialData?.techniques?.map((technique, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
             >
-              <Card className="overflow-hidden">
+              <Card className="overflow-hidden border-cr-green/50">
                 <CardHeader className="pb-2">
-                  <Skeleton className="h-5 w-3/4" />
+                  {technique?.title ? (
+                    <h3 className="font-semibold text-lg">{technique.title}</h3>
+                  ) : (
+                    <Skeleton className="h-5 w-3/4" />
+                  )}
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-4 w-full mb-2" />
-                  <Skeleton className="h-4 w-2/3" />
+                  {technique?.description ? (
+                    <p className="text-sm text-muted-foreground">{technique.description}</p>
+                  ) : (
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
           ))}
+
+          {/* Show skeletons only if we have few or no techniques yet */}
+          {(!partialData?.techniques || partialData.techniques.length < 3) &&
+            [...Array(3 - (partialData?.techniques?.length || 0))].map((_, i) => (
+              <motion.div
+                key={`skeleton-${i}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Card className="overflow-hidden opacity-50">
+                  <CardHeader className="pb-2">
+                    <Skeleton className="h-5 w-1/2" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
         </div>
 
         {partialData?.techniques && partialData.techniques.length > 0 && (
