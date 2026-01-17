@@ -13,8 +13,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "HobbyScope - Learn Any Hobby Without Overwhelm",
-  description: "Get a focused 5-8 technique learning plan for any hobby. No information overload, just practical skills.",
+  title: "HobbyScope",
+  description: "Horoscope for your hobbies, get better at what you enjoy doing"
 };
 
 export default function RootLayout({

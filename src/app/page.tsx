@@ -17,7 +17,6 @@ export default function LandingPage() {
   const router = useRouter();
   const { hasPlan, isLoaded } = useHobbyPlan();
 
-  // Redirect to plan if one exists
   useEffect(() => {
     if (isLoaded && hasPlan) {
       router.push("/plan");

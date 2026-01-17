@@ -6,8 +6,8 @@ generates a tailored roadmap according to your level
 - [ ] add background patterns for 3 pages @/components/pattern
 - [ ] add pacman loader for the time AI response generates
 - [ ] mabye we can add a scroll and drag for landing page
-- [ ] 
+- [ ] code cleanup - ai spat batshit
 
 ### credits
-https://uiverse.io/jaykdoe/tasty-dragon-12
-https://uiverse.io/artvelog/splendid-quail-83
+- https://uiverse.io/jaykdoe/tasty-dragon-12
+- https://uiverse.io/artvelog/splendid-quail-83

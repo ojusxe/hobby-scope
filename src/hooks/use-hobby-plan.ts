@@ -17,7 +17,6 @@ export function useHobbyPlan() {
   const [hobbyLevel, setHobbyLevel] = useState<string>("");
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load data on mount
   useEffect(() => {
     const loadedPlan = localStorage.getItem(STORAGE_KEYS.PLAN);
     const loadedHobby = localStorage.getItem(STORAGE_KEYS.HOBBY);
