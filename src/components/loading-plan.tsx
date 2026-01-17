@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import PacmanLoader from "@/components/pacman-loader";
+import PacmanLoader from "@/components/patterns/pacman-loader";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import Paper from "@/components/patterns/paper";
@@ -35,7 +35,6 @@ export function LoadingPlan({ hobby, level, partialData }: LoadingPlanProps) {
         </div>
 
         <div className="space-y-4">
-          {/* Show real partial techniques as they arrive */}
           {partialData?.techniques?.map((technique, i) => (
             <motion.div
               key={i}
@@ -64,7 +63,6 @@ export function LoadingPlan({ hobby, level, partialData }: LoadingPlanProps) {
             </motion.div>
           ))}
 
-          {/* Show skeletons only if we have few or no techniques yet */}
           {(!partialData?.techniques || partialData.techniques.length < 3) &&
             [...Array(3 - (partialData?.techniques?.length || 0))].map((_, i) => (
               <motion.div

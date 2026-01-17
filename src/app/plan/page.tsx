@@ -3,13 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { RotateCcw, X, ChevronUp } from "lucide-react";
+import { RotateCcw, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { TechniqueDetailContent } from "@/components/technique-detail-content";
 import { TechniqueCard } from "@/components/technique-card";
 import { useHobbyPlan } from "@/hooks";
-import type { Technique } from "@/lib/schemas";
 
 import Paper from "@/components/patterns/paper";
 

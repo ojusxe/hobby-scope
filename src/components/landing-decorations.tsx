@@ -35,7 +35,6 @@ export function LandingDecorations() {
         </motion.div>
       ))}
       
-      {/* Pacman-style Ghost Decoration */}
       <motion.div
         className="absolute top-1/4 right-[10%] opacity-20 hidden md:block"
         animate={{
@@ -50,7 +49,6 @@ export function LandingDecorations() {
         <Ghost className="w-32 h-32 text-red-500" />
       </motion.div>
 
-      {/* CSS Pacman */}
       <motion.div
         className="absolute bottom-1/4 left-[10%] hidden md:block opacity-40"
         animate={{

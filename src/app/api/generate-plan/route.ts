@@ -1,17 +1,15 @@
 import { perplexity } from "@ai-sdk/perplexity";
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamObject } from "ai";
-import { z } from "zod";
+import { learningPlanSchema } from "@/lib/schemas";
 
 export const maxDuration = 60;
 
-// OpenRouter (fallback)
+//  openrouter fallback
 const openrouter = createOpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
   baseURL: "https://openrouter.ai/api/v1",
 });
-
-import { learningPlanSchema } from "@/lib/schemas";
 
 export async function POST(req: Request) {
   const { hobby, level } = await req.json();
@@ -72,7 +70,7 @@ Output rules:
 Generate a focused, practical learning plan with REAL, WORKING URLs.`;
 
   try {
-    // Try Perplexity first (using official @ai-sdk/perplexity provider)
+    // pplx first (https://ai-sdk.dev/providers/ai-sdk-providers/perplexity)
     const result = streamObject({
       model: perplexity("sonar"),
       schema: learningPlanSchema,
@@ -80,8 +78,8 @@ Generate a focused, practical learning plan with REAL, WORKING URLs.`;
     });
     return result.toTextStreamResponse();
   } catch (error) {
-    console.error("Perplexity API error:", error);
-    // Fallback to OpenRouter (free)
+    console.error("[@generatePlan] pplx API error:", error);
+    // fallback
     try {
       const result = streamObject({
         model: openrouter("xiaomi/mimo-v2-flash:free"),

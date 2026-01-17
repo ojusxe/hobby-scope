@@ -39,7 +39,7 @@ export default function CreatePage() {
       }
     },
     onError: () => {
-      setError("Failed to generate plan. Please try again.");
+      setError("[@createPage] Failed to generate plan. Please try again.");
       setIsLoading(false);
     },
   });
