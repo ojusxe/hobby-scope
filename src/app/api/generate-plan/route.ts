@@ -1,8 +1,20 @@
-import { google } from "@ai-sdk/google";
+import { createOpenAI } from "@ai-sdk/openai";
 import { streamObject } from "ai";
 import { z } from "zod";
 
 export const maxDuration = 60;
+
+// Perplexity (primary)
+const perplexity = createOpenAI({
+  apiKey: process.env.PERPLEXITY_API_KEY,
+  baseURL: "https://api.perplexity.ai",
+});
+
+// OpenRouter (fallback)
+const openrouter = createOpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
+});
 
 const resourceSchema = z.object({
   type: z.enum(["video", "article", "audio"]),
@@ -22,10 +34,7 @@ const learningPlanSchema = z.object({
 export async function POST(req: Request) {
   const { hobby, level } = await req.json();
 
-  const result = streamObject({
-    model: google("gemini-2.0-flash"),
-    schema: learningPlanSchema,
-    prompt: `You are helping design a learning plan for a hobby.
+  const prompt = `You are helping design a learning plan for a hobby.
 
 Context:
 The user wants to learn a hobby without information overload.
@@ -50,8 +59,29 @@ User input:
 Hobby: ${hobby}
 Level: ${level}
 
-Generate a focused, practical learning plan.`,
-  });
+Generate a focused, practical learning plan.`;
 
-  return result.toTextStreamResponse();
+  try {
+    // Try Perplexity first (paid)
+    const result = streamObject({
+      model: perplexity("sonar"),
+      schema: learningPlanSchema,
+      prompt,
+    });
+    return result.toTextStreamResponse();
+  } catch (error) {
+    console.error("Perplexity API error:", error);
+    // Fallback to OpenRouter (free)
+    try {
+      const result = streamObject({
+        model: openrouter("xiaomi/mimo-v2-flash:free"),
+        schema: learningPlanSchema,
+        prompt,
+      });
+      return result.toTextStreamResponse();
+    } catch (fallbackError) {
+      console.error("OpenRouter fallback error:", fallbackError);
+      throw fallbackError;
+    }
+  }
 }

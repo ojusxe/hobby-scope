@@ -7,6 +7,7 @@ generates a tailored roadmap according to your level
 - [ ] add pacman loader for the time AI response generates
 - [ ] mabye we can add a scroll and drag for landing page
 - [ ] code cleanup - ai spat batshit
+- [ ] wtf with the gitignore, can't ignore the env files
 
 ### credits
 - https://uiverse.io/jaykdoe/tasty-dragon-12
