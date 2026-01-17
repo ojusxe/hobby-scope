@@ -90,7 +90,7 @@ export default function PlanPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen px-4 py-8 md:py-12 relative"
+      className="min-h-screen w-full px-4 py-8 md:py-12 relative overflow-hidden"
     >
       <div className="fixed inset-0 z-[-1] opacity-50">
         <FourDots />

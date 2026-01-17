@@ -1,3 +1,5 @@
+"use client";
+
 import styled from 'styled-components';
 
 const Pattern = () => {
@@ -9,6 +11,8 @@ const Pattern = () => {
 }
 
 const StyledWrapper = styled.div`
+  width: 100%;
+  height: 100%;
   .container {
     width: 100%;
     height: 100%;

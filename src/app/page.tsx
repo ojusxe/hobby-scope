@@ -13,6 +13,7 @@ import {
   Trophy,
 } from "lucide-react";
 
+import { LandingDecorations } from "@/components/landing-decorations";
 import Stars from "@/components/patterns/stars";
 
 export default function LandingPage() {
@@ -29,13 +30,13 @@ export default function LandingPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden"
+      className="min-h-screen w-full flex flex-col items-center justify-center px-4 relative overflow-hidden bg-[#090a0f]"
     >
       <div className="absolute inset-0 z-0">
         <Stars />
       </div>
-
-
+      
+      <LandingDecorations />
 
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -43,6 +44,16 @@ export default function LandingPage() {
         transition={{ delay: 0.2 }}
         className="relative z-10 text-center max-w-2xl"
       >
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="mb-8"
+        >
+             <h2 className="text-2xl md:text-3xl font-bold tracking-widest text-primary/80 uppercase font-display">
+            Hobby Scope
+          </h2>
+        </motion.div>
+
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

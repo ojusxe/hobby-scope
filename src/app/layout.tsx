@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Pixelify_Sans, Inter } from "next/font/google";
 import "./globals.css";
+import StyledComponentsRegistry from "@/lib/registry";
 
 const pixelifySans = Pixelify_Sans({
   variable: "--font-display",
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${pixelifySans.variable} ${inter.variable}`}>
       <body className="bg-background text-foreground min-h-screen font-body">
-        {children}
+        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
       </body>
     </html>
   );

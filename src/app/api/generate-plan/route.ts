@@ -35,7 +35,15 @@ For each technique, include:
 - description (1–2 sentences)
 - resources (2–3 items only)
   - resource type: video, article, or audio
-  - resource title (a realistic title for the resource)
+  - resource title (a realistic, descriptive title for the resource)
+  - resource url (a real, working URL to the actual resource)
+
+IMPORTANT - URL Requirements:
+- For videos: MUST be a valid YouTube URL (format: https://www.youtube.com/watch?v=... or https://youtu.be/...)
+- For articles: MUST be a valid URL to a real article on the internet (from reputable sources)
+- For audio: MUST be a valid URL to audio content (podcasts, audio lessons, etc.)
+- All URLs must be real, accessible links that exist on the internet
+- Use your web search capabilities to find actual, relevant resources
 
 User input:
 Hobby: ${hobby}
@@ -53,13 +61,15 @@ Output rules:
       "title": "",
       "description": "",
       "resources": [
-        { "type": "video", "title": "" }
+        { "type": "video", "title": "", "url": "https://www.youtube.com/watch?v=..." },
+        { "type": "article", "title": "", "url": "https://example.com/article" },
+        { "type": "audio", "title": "", "url": "https://example.com/audio" }
       ]
     }
   ]
 }
 
-Generate a focused, practical learning plan.`;
+Generate a focused, practical learning plan with REAL, WORKING URLs.`;
 
   try {
     // Try Perplexity first (using official @ai-sdk/perplexity provider)

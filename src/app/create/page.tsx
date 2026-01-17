@@ -66,7 +66,7 @@ export default function CreatePage() {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative"
+      className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden"
     >
       <div className="absolute inset-0 z-[-1] opacity-60">
         <Paper />

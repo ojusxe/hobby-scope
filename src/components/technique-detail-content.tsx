@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ResourceIcon } from "@/components/resource-icon";
 import { Check, X } from "lucide-react";
+import { ResourcePreview } from "@/components/resource-preview";
 import type { Technique, Resource } from "@/lib/schemas";
 
 interface TechniqueDetailContentProps {
@@ -21,25 +21,12 @@ export function TechniqueDetailContent({
         <p className="text-muted-foreground">{technique.description}</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
           Resources
         </h4>
         {technique.resources?.map((resource: Resource, idx: number) => (
-          <div
-            key={idx}
-            className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
-          >
-            <div className="p-2 rounded-md bg-accent/20 text-accent">
-              <ResourceIcon type={resource.type} />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-sm">{resource.title}</p>
-              <p className="text-xs text-muted-foreground capitalize">
-                {resource.type}
-              </p>
-            </div>
-          </div>
+          <ResourcePreview key={idx} resource={resource} />
         ))}
       </div>
 

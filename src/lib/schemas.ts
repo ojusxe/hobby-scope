@@ -3,6 +3,7 @@ import { z } from "zod";
 export const resourceSchema = z.object({
   type: z.enum(["video", "article", "audio"]),
   title: z.string(),
+  url: z.string().url(),
 });
 
 export const techniqueSchema = z.object({
