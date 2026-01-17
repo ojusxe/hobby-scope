@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import PacmanLoader from "@/components/pacman-loader";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import Paper from "@/components/patterns/paper";
 import type { LearningPlan } from "@/lib/schemas";
 
 interface LoadingPlanProps {
@@ -17,8 +18,11 @@ export function LoadingPlan({ hobby, level, partialData }: LoadingPlanProps) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen flex flex-col items-center justify-center px-4"
+      className="min-h-screen w-full flex flex-col items-center justify-center px-4 relative overflow-hidden"
     >
+      <div className="fixed inset-0 z-[-1] opacity-60">
+        <Paper />
+      </div>
       <div className="w-full max-w-lg space-y-8">
         <div className="text-center">
           <div className="flex justify-center mb-8">

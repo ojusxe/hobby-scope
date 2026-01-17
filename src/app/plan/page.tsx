@@ -1,31 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { RotateCcw } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { RotateCcw, X, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from "@/components/ui/drawer";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { TechniqueDetailContent } from "@/components/technique-detail-content";
 import { TechniqueCard } from "@/components/technique-card";
-import { useMediaQuery, useHobbyPlan } from "@/hooks";
+import { useHobbyPlan } from "@/hooks";
 import type { Technique } from "@/lib/schemas";
 
-import FourDots from "@/components/patterns/four-dots";
+import Paper from "@/components/patterns/paper";
 
 export default function PlanPage() {
   const router = useRouter();
@@ -40,9 +26,8 @@ export default function PlanPage() {
     clearPlan 
   } = useHobbyPlan();
   
-  const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isLoaded && !hasPlan) {
@@ -54,15 +39,23 @@ export default function PlanPage() {
     if (!plan || index === null) return;
     const technique = plan.techniques[index];
     updateTechniqueStatus(index, !technique.completed);
-    setSelectedTechnique(null);
-    setSelectedIndex(null);
   };
 
   const onRemove = (index: number) => {
     if (index === null) return;
     removeTechnique(index);
-    setSelectedTechnique(null);
-    setSelectedIndex(null);
+    setExpandedIndex(null);
+  };
+
+  const toggleExpand = (index: number) => {
+    if (expandedIndex === index) {
+      setExpandedIndex(null);
+    } else {
+      setExpandedIndex(index);
+      setTimeout(() => {
+        detailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
   };
 
   const onReset = () => {
@@ -80,20 +73,14 @@ export default function PlanPage() {
     ? (completedCount / activeTechniques.length) * 100
     : 0;
 
-  const DetailWrapper = isDesktop ? Dialog : Drawer;
-  const DetailContent = isDesktop ? DialogContent : DrawerContent;
-  const DetailHeader = isDesktop ? DialogHeader : DrawerHeader;
-  const DetailTitle = isDesktop ? DialogTitle : DrawerTitle;
-  const DetailDescription = isDesktop ? DialogDescription : DrawerDescription;
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen w-full px-4 py-8 md:py-12 relative overflow-hidden"
     >
-      <div className="fixed inset-0 z-[-1] opacity-50">
-        <FourDots />
+      <div className="fixed inset-0 z-[-1] opacity-60">
+        <Paper />
       </div>
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="flex items-start justify-between">
@@ -152,49 +139,49 @@ export default function PlanPage() {
         >
           {plan.techniques.map((technique, index) => {
             if (technique.removed) return null;
+            const isExpanded = expandedIndex === index;
             return (
-              <TechniqueCard
-                key={index}
-                technique={technique}
-                index={index}
-                onSelect={() => {
-                  setSelectedTechnique(technique);
-                  setSelectedIndex(index);
-                }}
-              />
+              <div key={index}>
+                <TechniqueCard
+                  technique={technique}
+                  index={index}
+                  onSelect={() => toggleExpand(index)}
+                  isExpanded={isExpanded}
+                />
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      ref={detailRef}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="bg-card border border-t-0 rounded-b-xl p-4 md:p-6 shadow-lg">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-semibold">Technique Details</h3>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setExpandedIndex(null)}
+                          >
+                            <ChevronUp className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <TechniqueDetailContent
+                          technique={technique}
+                          onComplete={() => onComplete(index)}
+                          onRemove={() => onRemove(index)}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             );
           })}
         </motion.div>
-
-        <DetailWrapper
-          open={!!selectedTechnique}
-          onOpenChange={(open) => {
-            if (!open) {
-              setSelectedTechnique(null);
-              setSelectedIndex(null);
-            }
-          }}
-        >
-          <DetailContent className={isDesktop ? "" : "max-h-[85vh]"}>
-            <DetailHeader>
-              <DetailTitle className="text-2xl font-bold leading-tight pr-8">
-                {selectedTechnique?.title}
-              </DetailTitle>
-              <DetailDescription className="text-base text-muted-foreground mt-2">
-                Technique Details
-              </DetailDescription>
-            </DetailHeader>
-            {selectedTechnique && selectedIndex !== null && (
-              <div className={isDesktop ? "" : "px-4 pb-4 overflow-y-auto"}>
-                <TechniqueDetailContent
-                  technique={selectedTechnique}
-                  onComplete={() => onComplete(selectedIndex)}
-                  onRemove={() => onRemove(selectedIndex)}
-                />
-              </div>
-            )}
-          </DetailContent>
-        </DetailWrapper>
       </div>
     </motion.div>
   );

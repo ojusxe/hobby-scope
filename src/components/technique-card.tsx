@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, ChevronRight } from "lucide-react";
+import { Check, ChevronRight, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResourceIcon } from "@/components/resource-icon";
 import type { Technique } from "@/lib/schemas";
@@ -10,9 +10,10 @@ interface TechniqueCardProps {
   technique: Technique;
   index: number;
   onSelect: () => void;
+  isExpanded?: boolean;
 }
 
-export function TechniqueCard({ technique, index, onSelect }: TechniqueCardProps) {
+export function TechniqueCard({ technique, index, onSelect, isExpanded }: TechniqueCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -25,7 +26,7 @@ export function TechniqueCard({ technique, index, onSelect }: TechniqueCardProps
           technique.completed
             ? "border-cr-green/50 bg-cr-green/5"
             : "hover:border-cr-green/30"
-        }`}
+        } ${isExpanded ? "rounded-b-none border-b-0" : ""}`}
         onClick={onSelect}
       >
         <CardHeader className="pb-2">
@@ -52,7 +53,11 @@ export function TechniqueCard({ technique, index, onSelect }: TechniqueCardProps
                 {technique.title}
               </span>
             </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            {isExpanded ? (
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>

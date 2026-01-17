@@ -32,7 +32,7 @@ export default function LandingPage() {
       animate={{ opacity: 1 }}
       className="min-h-screen w-full flex flex-col items-center justify-center px-4 relative overflow-hidden bg-[#090a0f]"
     >
-      <div className="absolute inset-0 z-0">
+      <div className="fixed inset-0 z-0">
         <Stars />
       </div>
       
