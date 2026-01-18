@@ -113,7 +113,7 @@ Generate a focused, practical learning plan with detailed search metadata.`;
       try {
         sendEvent(controller, "progress", { 
           step: "ai", 
-          message: "Generating your personalized learning plan..." 
+          message: "Generating your personalized learning plan... May take a few seconds" 
         });
 
         let planWithMeta;

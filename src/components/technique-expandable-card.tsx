@@ -255,23 +255,21 @@ export function TechniqueExpandableCard({
                       setActive(false);
                     }}
                     className={cn(
-                      "flex-1 h-12",
+                      "flex-1 h-12 font-semibold shadow-sm",
                       technique.completed
-                        ? "bg-cr-green/10 text-cr-green hover:bg-cr-green/20 border-cr-green/30"
-                        : "bg-cr-green hover:bg-cr-green/90 text-white"
+                        ? "bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-600"
+                        : "bg-cr-green hover:bg-cr-green/90 text-gray-900"
                     )}
-                    variant={technique.completed ? "outline" : "default"}
                   >
                     <Check className="w-5 h-5 mr-2" />
                     {technique.completed ? "Completed!" : "Mark as Complete"}
                   </Button>
                   <Button
-                    variant="outline"
                     onClick={() => {
                       onRemove(index);
                       setActive(false);
                     }}
-                    className="h-12 text-destructive hover:bg-destructive/10 border-destructive/30"
+                    className="h-12 font-semibold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 shadow-sm"
                   >
                     <X className="w-5 h-5 mr-2" />
                     Remove

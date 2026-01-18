@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Trash2, ArrowRight, FolderOpen, Plus } from "lucide-react";
+import { Calendar, Trash2, FolderOpen, Plus } from "lucide-react";
 import styled from "styled-components";
 
 import { Navbar } from "@/components/navbar";
@@ -150,30 +150,17 @@ export default function PlansPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="text-gray-400 hover:text-red-500 hover:bg-red-50"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setPlanToDelete(savedPlan.id);
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                className="bg-cr-green text-black hover:bg-cr-green/90 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSelectPlan(savedPlan);
-                                }}
-                              >
-                                Continue
-                                <ArrowRight className="w-4 h-4 ml-1" />
-                              </Button>
-                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-gray-400 hover:text-red-500 hover:bg-red-50 ml-auto"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPlanToDelete(savedPlan.id);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           </div>
                         </CardHeader>
                         <CardContent>
