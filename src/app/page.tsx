@@ -41,13 +41,6 @@ export default function LandingPage() {
           animate={{ y: 0, opacity: 1 }}
           className="mb-8 flex items-center justify-center gap-3"
         >
-          <Image 
-            src="/hobbyist-otis/gaming.png" 
-            alt="Hobby Scope mascot" 
-            width={48} 
-            height={48}
-            className="w-10 h-10 md:w-12 md:h-12"
-          />
           <h2 className="text-2xl md:text-3xl font-bold tracking-widest text-white uppercase font-display">
             Hobby Scope
           </h2>
