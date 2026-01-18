@@ -7,6 +7,16 @@ export const LEVELS = [
 ] as const;
 
 export const HOBBY_SUGGESTIONS = [
-  "Chess", "Guitar", "Photography", "Cooking", "Drawing", "Poker",
-  "Piano", "Coding", "Yoga", "Gardening", "Writing", "Dancing",
+  { name: "Chess", image: null },
+  { name: "Guitar", image: null },
+  { name: "Photography", image: null },
+  { name: "Cooking", image: "/hobbyist-otis/cooking.png" },
+  { name: "Drawing", image: "/hobbyist-otis/painting.png" },
+  { name: "Poker", image: "/hobbyist-otis/poker.png" },
+  { name: "Piano", image: "/hobbyist-otis/piano.png" },
+  { name: "Coding", image: "/hobbyist-otis/gaming.png" },
+  { name: "Yoga", image: null },
+  { name: "Gardening", image: "/hobbyist-otis/garden.png" },
+  { name: "Writing", image: "/hobbyist-otis/reading.png" },
+  { name: "Dancing", image: "/hobbyist-otis/singing.png" },
 ] as const;

@@ -111,10 +111,9 @@ Generate a focused, practical learning plan with detailed search metadata.`;
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        // Step 1: Generate plan with AI
         sendEvent(controller, "progress", { 
           step: "ai", 
-          message: "🤖 Generating your personalized learning plan..." 
+          message: "Generating your personalized learning plan..." 
         });
 
         let planWithMeta;
@@ -129,7 +128,7 @@ Generate a focused, practical learning plan with detailed search metadata.`;
           console.error("[@generatePlan] pplx API error:", error);
           sendEvent(controller, "progress", { 
             step: "ai-fallback", 
-            message: "🔄 Switching to backup AI model..." 
+            message: "Switching to backup AI model..." 
           });
           const result = await generateObject({
             model: openrouter("google/gemini-2.0-flash-001"),
@@ -142,7 +141,7 @@ Generate a focused, practical learning plan with detailed search metadata.`;
         const totalTechniques = planWithMeta.techniques.length;
         sendEvent(controller, "progress", { 
           step: "ai-complete", 
-          message: `✅ Plan ready! Found ${totalTechniques} techniques to master` 
+          message: `Plan ready! Found ${totalTechniques} techniques to master` 
         });
 
         // Step 2: Resolve resources for each technique
@@ -153,7 +152,7 @@ Generate a focused, practical learning plan with detailed search metadata.`;
           
           sendEvent(controller, "progress", { 
             step: "technique", 
-            message: `📚 Finding resources for "${techniqueMeta.title}" (${i + 1}/${totalTechniques})`,
+            message: `Finding resources for "${techniqueMeta.title}" (${i + 1}/${totalTechniques})`,
             current: i + 1,
             total: totalTechniques
           });
@@ -165,7 +164,7 @@ Generate a focused, practical learning plan with detailed search metadata.`;
           if (videoCount > 0) {
             sendEvent(controller, "progress", { 
               step: "youtube", 
-              message: `🎬 Searching YouTube for ${videoCount} video${videoCount > 1 ? 's' : ''}...` 
+              message: `Searching YouTube for ${videoCount} video${videoCount > 1 ? 's' : ''}...` 
             });
           }
 
@@ -184,7 +183,7 @@ Generate a focused, practical learning plan with detailed search metadata.`;
           if (articleCount > 0) {
             sendEvent(controller, "progress", { 
               step: "articles", 
-              message: `📰 Found ${resolvedResources.length} resources for this technique` 
+              message: `Found ${resolvedResources.length} resources for this technique` 
             });
           }
 
@@ -200,7 +199,7 @@ Generate a focused, practical learning plan with detailed search metadata.`;
         // Step 3: Complete
         sendEvent(controller, "progress", { 
           step: "complete", 
-          message: "🎉 Your learning plan is ready!" 
+          message: "Your learning plan is ready!" 
         });
 
         // Send the final plan

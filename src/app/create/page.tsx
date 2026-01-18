@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingPlan } from "@/components/loading-plan";
@@ -193,15 +194,24 @@ export default function CreatePage() {
           <div className="flex flex-wrap gap-2">
             {HOBBY_SUGGESTIONS.map((suggestion) => (
               <button
-                key={suggestion}
-                onClick={() => setHobby(suggestion)}
-                className={`px-3 py-1.5 text-sm rounded-full transition-all border ${
-                  hobby === suggestion
+                key={suggestion.name}
+                onClick={() => setHobby(suggestion.name)}
+                className={`px-3 py-1.5 text-sm rounded-full transition-all border flex items-center gap-1.5 ${
+                  hobby === suggestion.name
                     ? "bg-cr-green text-primary font-medium border-cr-green"
                     : "bg-gray-50 hover:bg-gray-100 border-gray-200"
                 }`}
               >
-                {suggestion}
+                {suggestion.image && (
+                  <Image
+                    src={suggestion.image}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="w-5 h-5 object-contain"
+                  />
+                )}
+                {suggestion.name}
               </button>
             ))}
           </div>
