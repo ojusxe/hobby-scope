@@ -1,91 +1,167 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import type { LearningPlan } from "@/lib/schemas";
 
+export interface SavedPlan {
+  id: string;
+  hobbyName: string;
+  hobbyLevel: string;
+  plan: LearningPlan;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const STORAGE_KEYS = {
-  PLAN: "hobby-plan",
-  HOBBY: "hobby-name",
-  LEVEL: "hobby-level",
+  PLANS: "hobby-plans",
+  CURRENT_PLAN_ID: "current-plan-id",
 } as const;
 
+function generateId(): string {
+  return `plan-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
 export function useHobbyPlan() {
-  const router = useRouter();
-  const [plan, setPlan] = useState<LearningPlan | null>(null);
-  const [hobbyName, setHobbyName] = useState<string>("");
-  const [hobbyLevel, setHobbyLevel] = useState<string>("");
+  const [allPlans, setAllPlans] = useState<SavedPlan[]>([]);
+  const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Load all plans from localStorage
   useEffect(() => {
-    const loadedPlan = localStorage.getItem(STORAGE_KEYS.PLAN);
-    const loadedHobby = localStorage.getItem(STORAGE_KEYS.HOBBY);
-    const loadedLevel = localStorage.getItem(STORAGE_KEYS.LEVEL);
+    const loadedPlans = localStorage.getItem(STORAGE_KEYS.PLANS);
+    const loadedCurrentId = localStorage.getItem(STORAGE_KEYS.CURRENT_PLAN_ID);
 
-    if (loadedPlan) setPlan(JSON.parse(loadedPlan));
-    if (loadedHobby) setHobbyName(JSON.parse(loadedHobby));
-    if (loadedLevel) setHobbyLevel(JSON.parse(loadedLevel));
+    if (loadedPlans) {
+      try {
+        setAllPlans(JSON.parse(loadedPlans));
+      } catch {
+        setAllPlans([]);
+      }
+    }
+    if (loadedCurrentId) {
+      setCurrentPlanId(loadedCurrentId);
+    }
     setIsLoaded(true);
   }, []);
 
-  const savePlan = useCallback((newPlan: LearningPlan, name: string, level: string) => {
-    localStorage.setItem(STORAGE_KEYS.PLAN, JSON.stringify(newPlan));
-    localStorage.setItem(STORAGE_KEYS.HOBBY, JSON.stringify(name));
-    localStorage.setItem(STORAGE_KEYS.LEVEL, JSON.stringify(level));
-    
-    setPlan(newPlan);
-    setHobbyName(name);
-    setHobbyLevel(level);
-  }, []);
+  // Get current plan
+  const currentPlan = allPlans.find(p => p.id === currentPlanId) || null;
+  const plan = currentPlan?.plan || null;
+  const hobbyName = currentPlan?.hobbyName || "";
+  const hobbyLevel = currentPlan?.hobbyLevel || "";
 
-  const updateTechniqueStatus = useCallback((index: number, isCompleted: boolean) => {
-    if (!plan) return;
+  // Save a new plan
+  const savePlan = useCallback((newPlan: LearningPlan, name: string, level: string) => {
+    const id = generateId();
+    const savedPlan: SavedPlan = {
+      id,
+      hobbyName: name,
+      hobbyLevel: level,
+      plan: newPlan,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const updatedPlans = [...allPlans, savedPlan];
+    localStorage.setItem(STORAGE_KEYS.PLANS, JSON.stringify(updatedPlans));
+    localStorage.setItem(STORAGE_KEYS.CURRENT_PLAN_ID, id);
     
-    const updatedTechniques = [...plan.techniques];
+    setAllPlans(updatedPlans);
+    setCurrentPlanId(id);
+  }, [allPlans]);
+
+  // Select a plan as current
+  const selectPlan = useCallback((planId: string) => {
+    const planExists = allPlans.some(p => p.id === planId);
+    if (planExists) {
+      localStorage.setItem(STORAGE_KEYS.CURRENT_PLAN_ID, planId);
+      setCurrentPlanId(planId);
+    }
+  }, [allPlans]);
+
+  // Update technique status in current plan
+  const updateTechniqueStatus = useCallback((index: number, isCompleted: boolean) => {
+    if (!currentPlan) return;
+    
+    const updatedTechniques = [...currentPlan.plan.techniques];
     updatedTechniques[index] = { 
       ...updatedTechniques[index], 
       completed: isCompleted 
     };
     
-    const updatedPlan = { ...plan, techniques: updatedTechniques };
+    const updatedPlan: SavedPlan = {
+      ...currentPlan,
+      plan: { ...currentPlan.plan, techniques: updatedTechniques },
+      updatedAt: new Date().toISOString(),
+    };
     
-    setPlan(updatedPlan);
-    localStorage.setItem(STORAGE_KEYS.PLAN, JSON.stringify(updatedPlan));
-  }, [plan]);
+    const updatedPlans = allPlans.map(p => p.id === currentPlanId ? updatedPlan : p);
+    localStorage.setItem(STORAGE_KEYS.PLANS, JSON.stringify(updatedPlans));
+    setAllPlans(updatedPlans);
+  }, [currentPlan, currentPlanId, allPlans]);
 
+  // Remove technique from current plan
   const removeTechnique = useCallback((index: number) => {
-    if (!plan) return;
+    if (!currentPlan) return;
     
-    const updatedTechniques = [...plan.techniques];
+    const updatedTechniques = [...currentPlan.plan.techniques];
     updatedTechniques[index] = { 
       ...updatedTechniques[index], 
       removed: true 
     };
     
-    const updatedPlan = { ...plan, techniques: updatedTechniques };
+    const updatedPlan: SavedPlan = {
+      ...currentPlan,
+      plan: { ...currentPlan.plan, techniques: updatedTechniques },
+      updatedAt: new Date().toISOString(),
+    };
     
-    setPlan(updatedPlan);
-    localStorage.setItem(STORAGE_KEYS.PLAN, JSON.stringify(updatedPlan));
-  }, [plan]);
+    const updatedPlans = allPlans.map(p => p.id === currentPlanId ? updatedPlan : p);
+    localStorage.setItem(STORAGE_KEYS.PLANS, JSON.stringify(updatedPlans));
+    setAllPlans(updatedPlans);
+  }, [currentPlan, currentPlanId, allPlans]);
 
-  const clearPlan = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEYS.PLAN);
-    localStorage.removeItem(STORAGE_KEYS.HOBBY);
-    localStorage.removeItem(STORAGE_KEYS.LEVEL);
-    setPlan(null);
-    setHobbyName("");
-    setHobbyLevel("");
+  // Delete a plan entirely
+  const deletePlan = useCallback((planId: string) => {
+    const updatedPlans = allPlans.filter(p => p.id !== planId);
+    localStorage.setItem(STORAGE_KEYS.PLANS, JSON.stringify(updatedPlans));
+    
+    // If deleting current plan, clear current selection
+    if (planId === currentPlanId) {
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_PLAN_ID);
+      setCurrentPlanId(null);
+    }
+    
+    setAllPlans(updatedPlans);
+  }, [allPlans, currentPlanId]);
+
+  // Clear current plan selection (go back to home)
+  const clearCurrentPlan = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_PLAN_ID);
+    setCurrentPlanId(null);
   }, []);
 
   return {
+    // Current plan data
     plan,
     hobbyName,
     hobbyLevel,
+    currentPlanId,
+    
+    // All plans
+    allPlans,
+    
+    // State
     isLoaded,
-    hasPlan: !!plan,
+    hasPlan: !!currentPlan,
+    hasAnyPlans: allPlans.length > 0,
+    
+    // Actions
     savePlan,
+    selectPlan,
     updateTechniqueStatus,
     removeTechnique,
-    clearPlan,
+    deletePlan,
+    clearCurrentPlan,
   };
 }

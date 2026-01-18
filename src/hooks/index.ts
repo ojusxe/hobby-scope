@@ -1,2 +1,2 @@
 export { useMediaQuery } from "./use-media-query";
-export { useHobbyPlan } from "./use-hobby-plan";
+export { useHobbyPlan, type SavedPlan } from "./use-hobby-plan";

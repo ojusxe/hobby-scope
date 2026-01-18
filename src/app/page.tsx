@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import {
   ChevronRight,
   Zap,
   Trophy,
+  FolderOpen,
 } from "lucide-react";
 
 import { LandingDecorations } from "@/components/landing-decorations";
@@ -17,13 +17,7 @@ import Stars from "@/components/patterns/stars";
 
 export default function LandingPage() {
   const router = useRouter();
-  const { hasPlan, isLoaded } = useHobbyPlan();
-
-  useEffect(() => {
-    if (isLoaded && hasPlan) {
-      router.push("/plan");
-    }
-  }, [router, isLoaded, hasPlan]);
+  const { hasPlan, hasAnyPlans, isLoaded, allPlans } = useHobbyPlan();
 
   return (
     <motion.div
@@ -77,6 +71,7 @@ export default function LandingPage() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.6 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Button
             size="lg"
@@ -86,6 +81,18 @@ export default function LandingPage() {
             Start Learning
             <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
+          
+          {isLoaded && hasAnyPlans && (
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push(hasPlan ? "/plan" : "/plans")}
+              className="border-white/30 text-black px-8 py-6 text-lg rounded-xl"
+            >
+              <FolderOpen className="w-5 h-5 mr-2" />
+              {hasPlan ? "Continue Plan" : `My Plans (${allPlans.length})`}
+            </Button>
+          )}
         </motion.div>
 
         <motion.div

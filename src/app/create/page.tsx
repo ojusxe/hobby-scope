@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingPlan } from "@/components/loading-plan";
+import { Navbar } from "@/components/navbar";
 import { type Resource } from "@/lib/schemas";
 import { LEVELS, HOBBY_SUGGESTIONS } from "@/lib/constants";
 import { useHobbyPlan } from "@/hooks";
@@ -75,18 +76,19 @@ export default function CreatePage() {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden"
+      className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-12 pt-20 relative overflow-hidden"
     >
+      <Navbar />
       <div className="fixed inset-0 z-[-1] opacity-60">
         <Paper />
       </div>
-      <div className="w-full max-w-lg space-y-8">
+      <div className="w-full max-w-lg bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8 space-y-6">
         <div className="text-center">
           <motion.h2
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="text-3xl font-bold mb-2"
+            className="text-2xl sm:text-3xl font-bold mb-2"
           >
             What do you want to learn?
           </motion.h2>
@@ -122,7 +124,7 @@ export default function CreatePage() {
               placeholder="e.g., Chess, Guitar, Photography..."
               value={hobby}
               onChange={(e) => setHobby(e.target.value)}
-              className="h-12 text-lg rounded-xl"
+              className="h-12 text-lg rounded-xl bg-white border-gray-200"
             />
           </div>
 
@@ -131,10 +133,10 @@ export default function CreatePage() {
               <button
                 key={suggestion}
                 onClick={() => setHobby(suggestion)}
-                className={`px-3 py-1.5 text-sm rounded-full transition-all ${
+                className={`px-3 py-1.5 text-sm rounded-full transition-all border ${
                   hobby === suggestion
-                    ? "bg-cr-green text-primary font-medium"
-                    : "bg-secondary hover:bg-secondary/80"
+                    ? "bg-cr-green text-primary font-medium border-cr-green"
+                    : "bg-gray-50 hover:bg-gray-100 border-gray-200"
                 }`}
               >
                 {suggestion}
@@ -155,10 +157,10 @@ export default function CreatePage() {
               <button
                 key={lvl.id}
                 onClick={() => setLevel(lvl.id)}
-                className={`p-4 rounded-xl border-2 transition-all text-left ${
+                className={`p-4 rounded-xl border-2 transition-all text-left bg-white ${
                   level === lvl.id
-                    ? "border-cr-green bg-cr-green/10"
-                    : "border-border hover:border-cr-green/50"
+                    ? "border-cr-green bg-cr-green/5"
+                    : "border-gray-200 hover:border-cr-green/50"
                 }`}
               >
                 <lvl.icon
