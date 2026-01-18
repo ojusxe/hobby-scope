@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useHobbyPlan } from "@/hooks";
 import {
   Target,
   ChevronRight,
@@ -17,7 +16,6 @@ import Stars from "@/components/patterns/stars";
 
 export default function LandingPage() {
   const router = useRouter();
-  const { hasPlan, hasAnyPlans, isLoaded, allPlans } = useHobbyPlan();
 
   return (
     <motion.div
@@ -82,17 +80,15 @@ export default function LandingPage() {
             <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
           
-          {isLoaded && hasAnyPlans && (
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => router.push(hasPlan ? "/plan" : "/plans")}
-              className="border-white/30 text-black px-8 py-6 text-lg rounded-xl"
-            >
-              <FolderOpen className="w-5 h-5 mr-2" />
-              {hasPlan ? "Continue Plan" : `My Plans (${allPlans.length})`}
-            </Button>
-          )}
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={() => router.push("/plans")}
+            className="border-white/30 text-black px-8 py-6 text-lg rounded-xl"
+          >
+            <FolderOpen className="w-5 h-5 mr-2" />
+            My Plans
+          </Button>
         </motion.div>
 
         <motion.div

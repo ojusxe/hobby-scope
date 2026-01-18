@@ -13,9 +13,67 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hobbyscope.vercel.app";
+
 export const metadata: Metadata = {
-  title: "HobbyScope",
-  description: "Horoscope for your hobbies, get better at what you enjoy doing"
+  title: {
+    default: "HobbyScope - Master Your Hobbies Without Overwhelm",
+    template: "%s | HobbyScope",
+  },
+  description:
+    "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes. Learn smarter with AI-curated resources.",
+  keywords: [
+    "hobby learning",
+    "skill development",
+    "learning plan",
+    "tutorial finder",
+    "hobby tracker",
+    "personalized learning",
+    "YouTube tutorials",
+    "beginner guide",
+  ],
+  authors: [{ name: "HobbyScope" }],
+  creator: "HobbyScope",
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "HobbyScope",
+    title: "HobbyScope - Master Your Hobbies Without Overwhelm",
+    description:
+      "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
+    images: [
+      {
+        url: "/opengraph.webp",
+        width: 1200,
+        height: 630,
+        alt: "HobbyScope - Master Your Hobbies Without Overwhelm",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HobbyScope - Master Your Hobbies Without Overwhelm",
+    description:
+      "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
+    images: ["/opengraph.webp"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/default.png",
+    apple: "/default.png",
+  },
 };
 
 export default function RootLayout({
