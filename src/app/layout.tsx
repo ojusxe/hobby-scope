@@ -45,7 +45,7 @@ export const metadata: Metadata = {
       "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
     images: [
       {
-        url: `${siteUrl}/opengraph.webp`,
+        url: `${siteUrl}/opengraph-image.webp`,
         width: 1200,
         height: 630,
         alt: "HobbyScope - Master Your Hobbies Without Overwhelm",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
       "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
     images: [
       {
-        url: `${siteUrl}/opengraph.webp`,
+        url: `${siteUrl}/opengraph-image.webp`,
         width: 1200,
         height: 630,
         alt: "HobbyScope - Master Your Hobbies Without Overwhelm",
