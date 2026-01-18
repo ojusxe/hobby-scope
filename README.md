@@ -9,7 +9,7 @@ a passion project where you can get better at your hobbies without overwhelm, co
 - [ ] mabye we can add a scroll and drag for landing page
 - [x] code cleanup - ai spat batshit
 - [x] wtf with the gitignore, can't ignore the env files
-- [ ] UX for "new plan", "go back to home", "access all plans"
+- [x] UX for "new plan", "go back to home", "access all plans"
 - [x] figure out YT embed links
 - [x] og, favicon, metadata, branding
 - [ ] articles are short description and not actual use and links attached are invalid
@@ -18,6 +18,8 @@ a passion project where you can get better at your hobbies without overwhelm, co
 ### technicalities 
 - using pplx api as primary and openrouter as fallback for the ai response
 - using youtube data api v3 for youtube links and serper.dev for google search links
+- created all the image assets of retro cartoon (i've named him Otis, yes with an O initial, same as my name)
+
 
 ### backend working
 ---
