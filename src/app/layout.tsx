@@ -17,11 +17,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hobbyscope.vercel.a
 
 export const metadata: Metadata = {
   title: {
-    default: "HobbyScope - Master Your Hobbies Without Overwhelm",
+    default: "HobbyScope",
     template: "%s | HobbyScope",
   },
   description:
-    "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes. Learn smarter with AI-curated resources.",
+    "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
   keywords: [
     "hobby learning",
     "skill development",
@@ -45,10 +45,11 @@ export const metadata: Metadata = {
       "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
     images: [
       {
-        url: "/opengraph.webp",
+        url: `${siteUrl}/opengraph.webp`,
         width: 1200,
         height: 630,
         alt: "HobbyScope - Master Your Hobbies Without Overwhelm",
+        type: "image/webp",
       },
     ],
   },
@@ -57,7 +58,14 @@ export const metadata: Metadata = {
     title: "HobbyScope - Master Your Hobbies Without Overwhelm",
     description:
       "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
-    images: ["/opengraph.webp"],
+    images: [
+      {
+        url: `${siteUrl}/opengraph.webp`,
+        width: 1200,
+        height: 630,
+        alt: "HobbyScope - Master Your Hobbies Without Overwhelm",
+      },
+    ],
   },
   robots: {
     index: true,
