@@ -21,6 +21,8 @@ export default function CreatePage() {
   const [level, setLevel] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [progressMessage, setProgressMessage] = useState("");
+  const [progressPercent, setProgressPercent] = useState(0);
 
   const handleGenerate = async () => {
     if (!hobby.trim()) {
@@ -33,6 +35,8 @@ export default function CreatePage() {
     }
     setError(null);
     setIsLoading(true);
+    setProgressMessage("Initializing...");
+    setProgressPercent(0);
 
     try {
       const response = await fetch("/api/generate-plan", {
@@ -45,31 +49,89 @@ export default function CreatePage() {
         throw new Error("Failed to generate plan");
       }
 
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error("Failed to read response");
       }
 
-      const planWithState = {
-        techniques: data.techniques.map((t: { title: string; description: string; resources: Resource[] }) => ({
-          ...t,
-          completed: false,
-          removed: false,
-        })),
-      };
-      
-      savePlan(planWithState, hobby, level);
-      router.push("/plan");
+      let buffer = "";
+      let currentEvent = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (line.startsWith("event: ")) {
+            currentEvent = line.slice(7);
+          } else if (line.startsWith("data: ") && currentEvent) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (currentEvent === "progress") {
+                setProgressMessage(data.message);
+                
+                // Calculate progress percentage
+                if (data.step === "ai") {
+                  setProgressPercent(10);
+                } else if (data.step === "ai-fallback") {
+                  setProgressPercent(15);
+                } else if (data.step === "ai-complete") {
+                  setProgressPercent(25);
+                } else if (data.step === "technique" && data.current && data.total) {
+                  // Progress from 25% to 90% based on technique resolution
+                  const techniqueProgress = (data.current / data.total) * 65;
+                  setProgressPercent(25 + techniqueProgress);
+                } else if (data.step === "complete") {
+                  setProgressPercent(100);
+                }
+              } else if (currentEvent === "complete") {
+                const planWithState = {
+                  techniques: data.techniques.map((t: { title: string; description: string; resources: Resource[] }) => ({
+                    ...t,
+                    completed: false,
+                    removed: false,
+                  })),
+                };
+                
+                savePlan(planWithState, hobby, level);
+                router.push("/plan");
+                return;
+              } else if (currentEvent === "error") {
+                throw new Error(data.message);
+              }
+              
+              currentEvent = "";
+            } catch {
+              // Ignore JSON parse errors for partial data
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error("[@createPage] Error:", err);
       setError("Failed to generate plan. Please try again.");
       setIsLoading(false);
+      setProgressMessage("");
+      setProgressPercent(0);
     }
   };
 
   if (isLoading) {
-    return <LoadingPlan hobby={hobby} level={level} />;
+    return (
+      <LoadingPlan 
+        hobby={hobby} 
+        level={level} 
+        progressMessage={progressMessage}
+        progressPercent={progressPercent}
+      />
+    );
   }
 
   return (

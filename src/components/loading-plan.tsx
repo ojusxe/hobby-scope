@@ -1,17 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import PacmanLoader from "@/components/pacman-loader";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import Paper from "@/components/patterns/paper";
 
 interface LoadingPlanProps {
   hobby: string;
   level: string;
+  progressMessage?: string;
+  progressPercent?: number;
 }
 
-export function LoadingPlan({ hobby, level }: LoadingPlanProps) {
+export function LoadingPlan({ hobby, level, progressMessage, progressPercent = 0 }: LoadingPlanProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -30,9 +33,32 @@ export function LoadingPlan({ hobby, level }: LoadingPlanProps) {
           <p className="text-muted-foreground">
             Crafting {hobby} techniques for {level} level
           </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Finding the best videos and articles for you...
-          </p>
+          
+          {/* Progress section */}
+          <div className="mt-6 space-y-3">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={progressMessage}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="text-sm font-medium text-foreground min-h-[1.5rem]"
+              >
+                {progressMessage || "Initializing..."}
+              </motion.p>
+            </AnimatePresence>
+            
+            {progressPercent > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scaleX: 0 }}
+                animate={{ opacity: 1, scaleX: 1 }}
+                className="w-full max-w-xs mx-auto"
+              >
+                <Progress value={progressPercent} className="h-2" />
+              </motion.div>
+            )}
+          </div>
         </div>
 
         <div className="space-y-4">

@@ -2,16 +2,39 @@ import { perplexity } from "@ai-sdk/perplexity";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { learningPlanSearchMetaSchema } from "@/lib/search-schemas";
-import { resolveLearningPlan } from "@/lib/resource-resolver";
-import { NextResponse } from "next/server";
+import { searchYouTube } from "@/lib/youtube-search";
+import { searchArticle } from "@/lib/article-search";
+import type { ResourceSearchMeta, TechniqueWithSearchMeta } from "@/lib/search-schemas";
+import type { Resource, Technique } from "@/lib/schemas";
 
 export const maxDuration = 60;
 
-//  openrouter fallback
+// openrouter fallback
 const openrouter = createOpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
   baseURL: "https://openrouter.ai/api/v1",
 });
+
+// Helper to send SSE events
+function sendEvent(controller: ReadableStreamDefaultController, event: string, data: unknown) {
+  const encoder = new TextEncoder();
+  controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+}
+
+// Resolve a single resource
+async function resolveResource(meta: ResourceSearchMeta): Promise<Resource | null> {
+  try {
+    if (meta.type === "video") {
+      return await searchYouTube(meta);
+    } else if (meta.type === "article") {
+      return await searchArticle(meta);
+    }
+    return null;
+  } catch (error) {
+    console.error("[ResourceResolver] Error resolving resource:", error);
+    return null;
+  }
+}
 
 export async function POST(req: Request) {
   const { hobby, level } = await req.json();
@@ -85,41 +108,118 @@ Output rules:
 
 Generate a focused, practical learning plan with detailed search metadata.`;
 
-  try {
-    // Generate the plan with search metadata (no URLs)
-    let planWithMeta;
-    
-    try {
-      // Try Perplexity first
-      const result = await generateObject({
-        model: perplexity("sonar"),
-        schema: learningPlanSearchMetaSchema,
-        prompt,
-      });
-      planWithMeta = result.object;
-    } catch (error) {
-      console.error("[@generatePlan] pplx API error:", error);
-      // Fallback to OpenRouter
-      const result = await generateObject({
-        model: openrouter("google/gemini-2.0-flash-001"),
-        schema: learningPlanSearchMetaSchema,
-        prompt,
-      });
-      planWithMeta = result.object;
-    }
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        // Step 1: Generate plan with AI
+        sendEvent(controller, "progress", { 
+          step: "ai", 
+          message: "🤖 Generating your personalized learning plan..." 
+        });
 
-    // Resolve search metadata to actual URLs using external APIs
-    console.log("[@generatePlan] Resolving resources for plan...");
-    const resolvedPlan = await resolveLearningPlan(planWithMeta);
-    
-    console.log(`[@generatePlan] Resolved ${resolvedPlan.techniques.length} techniques`);
-    
-    return NextResponse.json(resolvedPlan);
-  } catch (error) {
-    console.error("[@generatePlan] Error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate plan" },
-      { status: 500 }
-    );
-  }
+        let planWithMeta;
+        try {
+          const result = await generateObject({
+            model: perplexity("sonar"),
+            schema: learningPlanSearchMetaSchema,
+            prompt,
+          });
+          planWithMeta = result.object;
+        } catch (error) {
+          console.error("[@generatePlan] pplx API error:", error);
+          sendEvent(controller, "progress", { 
+            step: "ai-fallback", 
+            message: "🔄 Switching to backup AI model..." 
+          });
+          const result = await generateObject({
+            model: openrouter("google/gemini-2.0-flash-001"),
+            schema: learningPlanSearchMetaSchema,
+            prompt,
+          });
+          planWithMeta = result.object;
+        }
+
+        const totalTechniques = planWithMeta.techniques.length;
+        sendEvent(controller, "progress", { 
+          step: "ai-complete", 
+          message: `✅ Plan ready! Found ${totalTechniques} techniques to master` 
+        });
+
+        // Step 2: Resolve resources for each technique
+        const techniques: Technique[] = [];
+
+        for (let i = 0; i < planWithMeta.techniques.length; i++) {
+          const techniqueMeta: TechniqueWithSearchMeta = planWithMeta.techniques[i];
+          
+          sendEvent(controller, "progress", { 
+            step: "technique", 
+            message: `📚 Finding resources for "${techniqueMeta.title}" (${i + 1}/${totalTechniques})`,
+            current: i + 1,
+            total: totalTechniques
+          });
+
+          // Count videos and articles for this technique
+          const videoCount = techniqueMeta.resourceSearchMeta.filter(r => r.type === "video").length;
+          const articleCount = techniqueMeta.resourceSearchMeta.filter(r => r.type === "article").length;
+
+          if (videoCount > 0) {
+            sendEvent(controller, "progress", { 
+              step: "youtube", 
+              message: `🎬 Searching YouTube for ${videoCount} video${videoCount > 1 ? 's' : ''}...` 
+            });
+          }
+
+          // Resolve resources in parallel
+          const resolvedResources: Resource[] = [];
+          const results = await Promise.allSettled(
+            techniqueMeta.resourceSearchMeta.map(meta => resolveResource(meta))
+          );
+
+          for (const result of results) {
+            if (result.status === "fulfilled" && result.value !== null) {
+              resolvedResources.push(result.value);
+            }
+          }
+
+          if (articleCount > 0) {
+            sendEvent(controller, "progress", { 
+              step: "articles", 
+              message: `📰 Found ${resolvedResources.length} resources for this technique` 
+            });
+          }
+
+          techniques.push({
+            title: techniqueMeta.title,
+            description: techniqueMeta.description,
+            resources: resolvedResources,
+            completed: false,
+            removed: false,
+          });
+        }
+
+        // Step 3: Complete
+        sendEvent(controller, "progress", { 
+          step: "complete", 
+          message: "🎉 Your learning plan is ready!" 
+        });
+
+        // Send the final plan
+        sendEvent(controller, "complete", { techniques });
+
+        controller.close();
+      } catch (error) {
+        console.error("[@generatePlan] Error:", error);
+        sendEvent(controller, "error", { message: "Failed to generate plan" });
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive",
+    },
+  });
 }

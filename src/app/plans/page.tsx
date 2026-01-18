@@ -105,7 +105,7 @@ export default function PlansPage() {
               </p>
               <Button
                 onClick={() => router.push("/create")}
-                className="bg-cr-green hover:bg-cr-green/90"
+                className="bg-cr-green hover:bg-cr-green/90 text-black"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create New Plan
@@ -210,7 +210,7 @@ export default function PlansPage() {
                               </span>
                             )}
                           </div>
-                        </CardContent>
+                        </CardContent>  
                       </Card>
 
                       <AnimatePresence>
