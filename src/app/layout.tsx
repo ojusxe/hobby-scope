@@ -13,7 +13,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hobbyscope.vercel.app";
+const siteUrl = "https://hobbyscope.vercel.app";
 
 export const metadata: Metadata = {
   title: {
@@ -22,65 +22,47 @@ export const metadata: Metadata = {
   },
   description:
     "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
-  keywords: [
-    "hobby learning",
-    "skill development",
-    "learning plan",
-    "tutorial finder",
-    "hobby tracker",
-    "personalized learning",
-    "YouTube tutorials",
-    "beginner guide",
-  ],
-  authors: [{ name: "HobbyScope" }],
-  creator: "HobbyScope",
-  metadataBase: new URL(siteUrl),
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: siteUrl,
-    siteName: "HobbyScope",
-    title: "HobbyScope - Master Your Hobbies Without Overwhelm",
-    description:
-      "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
-    images: [
-      {
-        url: `${siteUrl}/opengraph-image.webp`,
-        width: 1200,
-        height: 630,
-        alt: "HobbyScope - Master Your Hobbies Without Overwhelm",
-        type: "image/webp",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "HobbyScope - Master Your Hobbies Without Overwhelm",
-    description:
-      "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
-    images: [
-      {
-        url: `${siteUrl}/opengraph-image.webp`,
-        width: 1200,
-        height: 630,
-        alt: "HobbyScope - Master Your Hobbies Without Overwhelm",
-      },
-    ],
-  },
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
     },
   },
-  icons: {
-    icon: "/default.png",
-    apple: "/default.png",
+  keywords: [
+    "hobby learning",
+    "learning plan",
+    "hobby tracker",
+    "personalized learning",
+    "YouTube tutorials",
+    "beginner guide",
+  ],
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "HobbyScope",
+    title: "HobbyScope",
+    description:
+      "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
+    images: [
+      {
+        url: `/opengraph.webp`,
+        width: 1200,
+        height: 630,
+        alt: "HobbyScope",
+        type: "image/webp",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HobbyScope",
+    description:
+      "Get a focused 5-8 technique plan tailored to your skill level. No more endless YouTube rabbit holes.",
+    images: ["/opengraph.webp"],
   },
 };
 
