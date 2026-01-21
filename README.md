@@ -15,7 +15,7 @@ a passion project where you can get better at your hobbies without overwhelm, co
 - [ ] articles are short description and not actual use and links attached are invalid
 - [ ] maybe we can add a celebration when users complete all the techniques
 
-### technicalities 
+### tech used 
 - using pplx api as primary and openrouter as fallback for the ai response
 - using youtube data api v3 for youtube links and serper.dev for google search links
 - created all the image assets of retro cartoon (i've named him Otis, yes with an O initial, same as my name)
@@ -38,4 +38,5 @@ flowchart LR
 - https://uiverse.io/jaykdoe/tasty-dragon-12
 - https://uiverse.io/artvelog/splendid-quail-83
 - https://www.badtz-ui.com/docs/components/expandable-card
+
 
