@@ -22,14 +22,20 @@ a passion project where you can get better at your hobbies without overwhelm, co
 
 
 ### backend working
----
-LLM:	              Technique + refined search intent
-YouTube:          API	Resolve → real video ID
-Article:          search API	Resolve → real article URL
-App:        	Validate + render
----
+```mermaid
+flowchart LR
+    A[LLM<br/>Technique + Refined Search Intent]
+    B[YouTube API<br/>Resolve → Real Video ID]
+    C[Article Search API<br/>Resolve → Real Article URL]
+    D[App<br/>Validate + Render]
 
+    A --> B
+    A --> C
+    B --> D
+    C --> D
+```
 ### credits
 - https://uiverse.io/jaykdoe/tasty-dragon-12
 - https://uiverse.io/artvelog/splendid-quail-83
 - https://www.badtz-ui.com/docs/components/expandable-card
+
