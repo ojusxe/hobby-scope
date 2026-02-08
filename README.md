@@ -14,6 +14,7 @@ a passion project where you can get better at your hobbies without overwhelm, co
 - [x] og, favicon, metadata, branding
 - [ ] articles are short description and not actual use and links attached are invalid
 - [ ] maybe we can add a celebration when users complete all the techniques
+- [ ] for youtube embed : https://www.cult-ui.com/docs/components/youtube-video-player
 
 ### technicalities 
 - using pplx api as primary and openrouter as fallback for the ai response

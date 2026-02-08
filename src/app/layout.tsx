@@ -13,7 +13,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://hobbyscope.vercel.app";
+const siteUrl = "https://hobby-scope.vercel.app";
 
 export const metadata: Metadata = {
   title: {
