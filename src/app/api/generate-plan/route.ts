@@ -1,7 +1,7 @@
 import { perplexity } from "@ai-sdk/perplexity";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateObject } from "ai";
-import { learningPlanSearchMetaSchema } from "@/lib/search-schemas";
+import { learningPlanSearchMetaSchema, learningPlanSearchMetaSchemaFallback } from "@/lib/search-schemas";
 import { searchYouTube } from "@/lib/youtube-search";
 import { searchArticle } from "@/lib/article-search";
 import type { ResourceSearchMeta, TechniqueWithSearchMeta } from "@/lib/search-schemas";
@@ -132,7 +132,7 @@ Generate a focused, practical learning plan with detailed search metadata.`;
           });
           const result = await generateObject({
             model: openrouter("google/gemini-2.0-flash-001"),
-            schema: learningPlanSearchMetaSchema,
+            schema: learningPlanSearchMetaSchemaFallback,
             prompt,
           });
           planWithMeta = result.object;

@@ -36,6 +36,16 @@ export const learningPlanSearchMetaSchema = z.object({
   techniques: z.array(techniqueWithSearchMetaSchema).min(5).max(8),
 });
 
+export const techniqueWithSearchMetaSchemaFallback = z.object({
+  title: z.string(),
+  description: z.string(),
+  resourceSearchMeta: z.array(resourceSearchMetaSchema),
+});
+
+export const learningPlanSearchMetaSchemaFallback = z.object({
+  techniques: z.array(techniqueWithSearchMetaSchemaFallback),
+});
+
 export type VideoSearchMeta = z.infer<typeof videoSearchMetaSchema>;
 export type ArticleSearchMeta = z.infer<typeof articleSearchMetaSchema>;
 export type ResourceSearchMeta = z.infer<typeof resourceSearchMetaSchema>;
