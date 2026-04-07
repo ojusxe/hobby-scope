@@ -47,7 +47,12 @@ export async function searchYouTube(meta: VideoSearchMeta): Promise<Resource | n
       // For longer videos, don't filter by duration
     }
 
-    const response = await fetch(`${YOUTUBE_SEARCH_URL}?${params}`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    const response = await fetch(`${YOUTUBE_SEARCH_URL}?${params}`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
     
     if (!response.ok) {
       console.error("[YouTube] API error:", response.status, await response.text());
@@ -100,7 +105,10 @@ async function validateYouTubeVideo(videoId: string): Promise<boolean> {
   try {
     // Use oEmbed endpoint for quick validation (no API key needed)
     const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-    const response = await fetch(oembedUrl, { method: "HEAD" });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const response = await fetch(oembedUrl, { method: "HEAD", signal: controller.signal });
+    clearTimeout(timeout);
     return response.ok;
   } catch {
     return false;

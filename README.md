@@ -18,7 +18,7 @@ a passion project where you can get better at your hobbies without overwhelm, co
 - [ ] puter.js for the llm response? - investigate
 
 ### tech used 
-- using pplx api as primary and openrouter as fallback for the ai response
+- using openrouter for the ai response
 - using youtube data api v3 for youtube links and serper.dev for google search links
 - created all the image assets of retro cartoon (i've named him Otis, yes with an O initial, same as my name)
 

@@ -1,6 +1,5 @@
-import { perplexity } from "@ai-sdk/perplexity";
 import { createOpenAI } from "@ai-sdk/openai";
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { learningPlanSearchMetaSchema } from "@/lib/search-schemas";
 import { searchYouTube } from "@/lib/youtube-search";
 import { searchArticle } from "@/lib/article-search";
@@ -9,7 +8,7 @@ import type { Resource, Technique } from "@/lib/schemas";
 
 export const maxDuration = 60;
 
-// openrouter fallback
+// OpenRouter is the primary LLM provider
 const openrouter = createOpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
   baseURL: "https://openrouter.ai/api/v1",
@@ -19,6 +18,35 @@ const openrouter = createOpenAI({
 function sendEvent(controller: ReadableStreamDefaultController, event: string, data: unknown) {
   const encoder = new TextEncoder();
   controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });
+}
+
+function extractJsonObject(text: string): string {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error("Model did not return a JSON object");
+  }
+
+  return text.slice(start, end + 1);
 }
 
 // Resolve a single resource
@@ -116,27 +144,18 @@ Generate a focused, practical learning plan with detailed search metadata.`;
           message: "Generating your personalized learning plan... May take a few seconds" 
         });
 
-        let planWithMeta;
-        try {
-          const result = await generateObject({
-            model: perplexity("sonar"),
-            schema: learningPlanSearchMetaSchema,
-            prompt,
-          });
-          planWithMeta = result.object;
-        } catch (error) {
-          console.error("[@generatePlan] pplx API error:", error);
-          sendEvent(controller, "progress", { 
-            step: "ai-fallback", 
-            message: "Switching to backup AI model..." 
-          });
-          const result = await generateObject({
+        const result = await withTimeout(
+          generateText({
             model: openrouter("google/gemini-2.0-flash-001"),
-            schema: learningPlanSearchMetaSchema,
             prompt,
-          });
-          planWithMeta = result.object;
-        }
+          }),
+          30000,
+          "OpenRouter request"
+        );
+
+        const rawJson = extractJsonObject(result.text);
+        const parsed = JSON.parse(rawJson);
+        const planWithMeta = learningPlanSearchMetaSchema.parse(parsed);
 
         const totalTechniques = planWithMeta.techniques.length;
         sendEvent(controller, "progress", { 

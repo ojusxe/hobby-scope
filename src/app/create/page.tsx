@@ -59,6 +59,7 @@ export default function CreatePage() {
 
       let buffer = "";
       let currentEvent = "";
+      let didComplete = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -102,6 +103,7 @@ export default function CreatePage() {
                 };
                 
                 savePlan(planWithState, hobby, level);
+                didComplete = true;
                 router.push("/plan");
                 return;
               } else if (currentEvent === "error") {
@@ -114,6 +116,12 @@ export default function CreatePage() {
             }
           }
         }
+      }
+
+      // If the stream ended without an explicit completion event,
+      // treat it as a failed generation and release the loading UI.
+      if (!didComplete) {
+        throw new Error("Generation stream ended before completion");
       }
     } catch (err) {
       console.error("[@createPage] Error:", err);
